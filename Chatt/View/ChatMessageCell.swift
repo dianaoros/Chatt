@@ -13,6 +13,7 @@ class ChatMessageCell: UICollectionViewCell {
     var bubbleViewWidthAnchor : NSLayoutConstraint?
     var bubbleViewRightAnchor : NSLayoutConstraint?
     var bubbleViewLeftAnchor : NSLayoutConstraint?
+    var chatLogController : ChatLogController?
     
     static let blueColor = UIColor(red: 0/255, green: 137/255, blue: 249/255, alpha: 1)
     
@@ -45,12 +46,14 @@ class ChatMessageCell: UICollectionViewCell {
         return imageView
     }()
     
-    let messageImageView : UIImageView = {
+    lazy var messageImageView : UIImageView = {
         let imageView = UIImageView()
         imageView.layer.cornerRadius = 16
         imageView.layer.masksToBounds = true
         imageView.contentMode = UIImageView.ContentMode.scaleAspectFill
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.isUserInteractionEnabled = true
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleZoomTap)))
         return imageView
     }()
 
@@ -87,6 +90,12 @@ class ChatMessageCell: UICollectionViewCell {
         messageImageView.topAnchor.constraint(equalTo: bubbleView.topAnchor).isActive = true
         messageImageView.widthAnchor.constraint(equalTo: bubbleView.widthAnchor).isActive = true
         messageImageView.heightAnchor.constraint(equalTo: bubbleView.heightAnchor).isActive = true
+    }
+    
+    @objc func handleZoomTap(tapGesture : UITapGestureRecognizer) {
+        if let imageView = tapGesture.view as? UIImageView {
+            self.chatLogController?.performZoomInForStartingImageView(startingImageView: imageView)
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {
