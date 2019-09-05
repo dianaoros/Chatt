@@ -96,8 +96,8 @@ class ChatLogController : UICollectionViewController, UICollectionViewDelegateFl
         
         uploadImageView.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 8).isActive = true
         uploadImageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
-        uploadImageView.widthAnchor.constraint(equalToConstant: 44).isActive = true
-        uploadImageView.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        uploadImageView.widthAnchor.constraint(equalToConstant: 38).isActive = true
+        uploadImageView.heightAnchor.constraint(equalToConstant: 38).isActive = true
         
 //        let textField = UITextField()
 //        textField.placeholder = "Message"
@@ -347,6 +347,7 @@ class ChatLogController : UICollectionViewController, UICollectionViewDelegateFl
         let message = messagesArray[indexPath.item]
         cell.messageTextView.text = message.text
         cell.chatLogController = self
+        cell.message = message
         
         if let text = message.text {
             cell.bubbleViewWidthAnchor?.constant = estimateFrameForText(text: text).width + 32
@@ -355,7 +356,14 @@ class ChatLogController : UICollectionViewController, UICollectionViewDelegateFl
             cell.bubbleViewWidthAnchor?.constant = 200
             cell.messageTextView.isHidden = true
         }
+        if message.videoURL != nil {
+            cell.playButton.isHidden = false
+        } else {
+            cell.playButton.isHidden = true
+        }
         
+        //does the same as:
+//        cell.playButton.isHidden = message.videoURL == nil
         setupCell(cell: cell, message: message)
         
         return cell
