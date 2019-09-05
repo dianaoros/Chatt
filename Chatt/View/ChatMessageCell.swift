@@ -56,6 +56,15 @@ class ChatMessageCell: UICollectionViewCell {
         imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleZoomTap)))
         return imageView
     }()
+    
+    let playButton : UIButton = {
+        let button = UIButton(type: .system)
+        let image = UIImage(named: "play_button")
+        button.setImage(image, for: .normal)
+        button.tintColor = .white
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
 
     
     override init(frame: CGRect) {
@@ -65,6 +74,7 @@ class ChatMessageCell: UICollectionViewCell {
         addSubview(messageTextView)
         addSubview(profileImageView)
         bubbleView.addSubview(messageImageView)
+        bubbleView.addSubview(playButton)
         
         bubbleViewRightAnchor = bubbleView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -8)
         bubbleViewRightAnchor?.isActive = true
@@ -90,6 +100,11 @@ class ChatMessageCell: UICollectionViewCell {
         messageImageView.topAnchor.constraint(equalTo: bubbleView.topAnchor).isActive = true
         messageImageView.widthAnchor.constraint(equalTo: bubbleView.widthAnchor).isActive = true
         messageImageView.heightAnchor.constraint(equalTo: bubbleView.heightAnchor).isActive = true
+        
+        playButton.centerXAnchor.constraint(equalTo: bubbleView.centerXAnchor).isActive = true
+        playButton.centerYAnchor.constraint(equalTo: bubbleView.centerYAnchor).isActive = true
+        playButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        playButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
     
     @objc func handleZoomTap(tapGesture : UITapGestureRecognizer) {

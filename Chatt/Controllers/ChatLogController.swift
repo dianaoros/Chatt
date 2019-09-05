@@ -8,6 +8,8 @@
 
 import UIKit
 import Firebase
+import MobileCoreServices
+import AVFoundation
 
 class ChatLogController : UICollectionViewController, UICollectionViewDelegateFlowLayout, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -121,6 +123,7 @@ class ChatLogController : UICollectionViewController, UICollectionViewDelegateFl
         let imagePicker = UIImagePickerController()
         imagePicker.allowsEditing = true
         imagePicker.delegate = self
+        imagePicker.mediaTypes = [kUTTypeImage as String, kUTTypeMovie as String]
         present(imagePicker, animated: true, completion: nil)
     }
     
@@ -129,11 +132,19 @@ class ChatLogController : UICollectionViewController, UICollectionViewDelegateFl
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        print("we selected an image")
+        if let videoURL = info[.mediaURL] as? URL {
+            uploadToFirebaseStorageUsingVideoURL(url: videoURL)
+        } else {
+            handleImageSelectedWithInfo(info: info)
+        }
         
+        dismiss(animated: true, completion: nil)
+
+    }
+    private func handleImageSelectedWithInfo(info: [UIImagePickerController.InfoKey : Any]) {
         var selectedImageFromPicker : UIImage?
         
-        if let editedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
+        if let editedImage = info[.editedImage] as? UIImage {
             selectedImageFromPicker = editedImage
         }
         else if let originalImage = info[.originalImage] as? UIImage {
@@ -141,14 +152,71 @@ class ChatLogController : UICollectionViewController, UICollectionViewDelegateFl
         }
         
         if let selectedImage = selectedImageFromPicker {
-            uploadToFirebaseStorageUsingImage(image: selectedImage)
+            uploadToFirebaseStorageUsingImage(image: selectedImage) { (imageURL) in
+                self.sendMessageWithImageURL(imageURL: imageURL, image: selectedImage)
+            }
         }
-        
-        dismiss(animated: true, completion: nil)
+    }
 
+    private func uploadToFirebaseStorageUsingVideoURL(url: URL) {
+        if let thumbnailImage = thumbnailImageForFileURL(fileURL: url) {
+            let userMessageVideo = NSUUID().uuidString
+            let videoAlbumStorage = Storage.storage().reference().child("Message_Videos")
+            let videoStorage = videoAlbumStorage.child("\(userMessageVideo).mov")
+            let uploadTask = videoStorage.putFile(from: url, metadata: nil) { (metadata, error) in
+                if error != nil {
+                    print("Error uploading videos to Firebase Storage:", error!)
+                } else {
+                    videoStorage.downloadURL(completion: { (url, error) in
+                        if error != nil {
+                            print("Error downloading video url from firebase:", error!)
+                        } else if let firebaseVideoURL = url?.absoluteString {
+                            print("Here's the firebase video url:", firebaseVideoURL)
+                            self.uploadToFirebaseStorageUsingImage(image: thumbnailImage, completion: { (imageURL) in
+                                let properties : [String : AnyObject] = ["videoURL" : firebaseVideoURL as AnyObject,
+                                                                         "imageWidth" : thumbnailImage.size.width as AnyObject,
+                                                                         "imageHeight" : thumbnailImage.size.height as AnyObject,
+                                                                         "imageURL": imageURL as AnyObject]
+                            
+                                self.sendMessagesWithProperties(properties: properties)
+                            })
+                        }
+                    })
+                }
+            }
+
+            uploadTask.observe(.progress) { (snapshot) in
+                if let completedUnitCount = snapshot.progress?.completedUnitCount, let totalUnitCount = snapshot.progress?.totalUnitCount {
+                    let uploadPercentage = completedUnitCount * 100 / totalUnitCount
+//                self.navigationItem.title = String(completedUnitCount)
+                    self.navigationItem.title = "Loading " + String(uploadPercentage) + "%"
+                }
+            }
+        
+            uploadTask.observe(.failure) { (snapshot) in
+                self.navigationItem.title = "Poor connection. Please try again"
+            }
+
+            uploadTask.observe(.success) { (snapshot) in
+                self.navigationItem.title = self.user?.name
+            }
+        }
     }
     
-    private func uploadToFirebaseStorageUsingImage(image: UIImage) {
+    private func thumbnailImageForFileURL(fileURL: URL) -> UIImage? {
+        let asset = AVAsset(url: fileURL)
+        let imageGenerator = AVAssetImageGenerator(asset: asset)
+        do {
+            let thumbnailCGImage = try imageGenerator.copyCGImage(at: CMTime(value: 1, timescale: 60), actualTime: nil)
+            return UIImage(cgImage: thumbnailCGImage)
+        } catch let error {
+            print(error)
+        }
+        
+        return nil
+    }
+    
+    private func uploadToFirebaseStorageUsingImage(image: UIImage, completion: @escaping (String) -> ()) {
         let userMessageImage = NSUUID().uuidString
         let imageReference = Storage.storage().reference().child("Message_Images").child("\(userMessageImage).jpg")
         if let uploadData = image.jpegData(compressionQuality: 0.02) {
@@ -160,7 +228,8 @@ class ChatLogController : UICollectionViewController, UICollectionViewDelegateFl
                         if error != nil {
                             print("Error downloading url", error!)
                         } else if let imageURL = url?.absoluteString {
-                            self.sendMessageWithImageURL(imageURL: imageURL, image: image)
+                            completion(imageURL)
+//                            self.sendMessageWithImageURL(imageURL: imageURL, image: image)
                             
                         }
                     })
