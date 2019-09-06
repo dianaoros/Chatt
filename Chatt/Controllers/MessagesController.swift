@@ -21,7 +21,10 @@ class MessagesController: UITableViewController {
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(handleLogout))
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(handleNewMessage))
+        
         tableView.register(UserCell.self, forCellReuseIdentifier: cellId)
+        tableView.allowsMultipleSelectionDuringEditing = true
+        
         checkIfUserIsLoggedIn()
 //        observeMessages()
 //        observeUserMessages()
@@ -156,10 +159,28 @@ class MessagesController: UITableViewController {
                 let messageID = snapshot.key
                 self.fetchMessagesWithMessageID(messageID: messageID)
                 
-                
             }, withCancel: nil)
-
+            
+//            partnerIDMessageReference.observe(.childRemoved, with: { (snapshot) in
+//                print(snapshot)
+//                print(self.messageDictionary)
+//                self.messageDictionary.removeValue(forKey: snapshot.key)
+//                self.attemptReloadOfTable()
+//
+//            }, withCancel: nil)
+            
         }, withCancel: nil)
+        
+        userMessagesReference.observe(.childRemoved, with: { (snapshot) in
+            print(snapshot)
+            print(self.messageDictionary)
+            self.messageDictionary.removeValue(forKey: snapshot.key)
+            self.attemptReloadOfTable()
+            
+        }, withCancel: nil)
+        
+        
+
     }
     
     private func fetchMessagesWithMessageID(messageID : String) {
@@ -263,6 +284,34 @@ class MessagesController: UITableViewController {
         }, withCancel: nil)
         
     }
+    
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        print(indexPath.row)
+        
+        guard let currentUserUID = Auth.auth().currentUser?.uid else {
+            return
+        }
+        let message = messagesArray[indexPath.row]
+        
+        if let chatPartnerID = message.chatPartnerID() {
+            Database.database().reference().child("User-Messages").child(currentUserUID).child(chatPartnerID).removeValue { (error, reference) in
+                if error != nil {
+                    print("Error deleting messages: ", error!)
+                } else {
+                    self.messageDictionary.removeValue(forKey: chatPartnerID)
+                    self.attemptReloadOfTable()
+                }
+            }
+        }
+    }
 
+    
+    
+    
+    
 }
 
