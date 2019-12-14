@@ -52,9 +52,7 @@ class ChatLogController : UICollectionViewController, UICollectionViewDelegateFl
 //        collectionView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
         collectionView.keyboardDismissMode = .interactive
         collectionView.alwaysBounceVertical = true
-        
-//        setupInputsComponents()
-//        setupKeyboardObserver()
+
         keyboardObserver()
         
     }
@@ -98,13 +96,6 @@ class ChatLogController : UICollectionViewController, UICollectionViewDelegateFl
         uploadImageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
         uploadImageView.widthAnchor.constraint(equalToConstant: 38).isActive = true
         uploadImageView.heightAnchor.constraint(equalToConstant: 38).isActive = true
-        
-//        let textField = UITextField()
-//        textField.placeholder = "Message"
-//
-//        containerView.addSubview(textField)
-//
-//        textField.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 80)
         
         return containerView
     }()
@@ -236,49 +227,6 @@ class ChatLogController : UICollectionViewController, UICollectionViewDelegateFl
                 }
             }
         }
-    }
-    
-
-    
-    func setupInputsComponents() {
-        let containerView = UIView()
-        containerView.backgroundColor = .white
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.addSubview(containerView)
-        
-        containerView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-//        containerViewBottomAnchor = containerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        containerViewBottomAnchor = containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        containerViewBottomAnchor?.isActive = true
-        containerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        containerView.heightAnchor.constraint(equalToConstant: 80).isActive = true
-        
-        containerView.addSubview(sendButton)
-        
-        sendButton.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true
-        sendButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
-        sendButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        sendButton.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
-        
-        containerView.addSubview(messageInputTextField)
-        
-        messageInputTextField.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 8).isActive = true
-        messageInputTextField.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
-        messageInputTextField.rightAnchor.constraint(equalTo: sendButton.leftAnchor).isActive = true
-        messageInputTextField.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
-        
-        let separatorView = UIView()
-        separatorView.backgroundColor = UIColor(red: 200/225, green: 200/225, blue: 200/225, alpha: 1)
-        separatorView.translatesAutoresizingMaskIntoConstraints = false
-        
-        containerView.addSubview(separatorView)
-        
-        separatorView.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
-        separatorView.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
-        separatorView.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true
-        separatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
-        
     }
     
     @objc func handleSend() {
@@ -434,43 +382,12 @@ class ChatLogController : UICollectionViewController, UICollectionViewDelegateFl
                     return
                 }
                 let message = MessagesModel(dictionary: dictionary)
-
-//                let receiverID = dictionary["receiverID"]!
-//                let receiverEmail = dictionary["receiverEmail"]!
-//                let senderID = dictionary["senderID"]!
-//                let senderEmail = dictionary["senderEmail"]!
-//                let timestamp = dictionary["timestamp"]!
-//
-//                if let text = dictionary["text"] {
-//                    message.text = text as? String
-//                }
-//
-//                if let image = dictionary["imageURL"] {
-//                    message.imageURL = image as? String
-//                }
-//                if let imageWidth = dictionary["imageWidth"] {
-//                    message.imageWidth = imageWidth as? NSNumber
-//                }
-//
-//                if let imageHeight = dictionary["imageHeight"] {
-//                    message.imageHeight = imageHeight as? NSNumber
-//                }
-//
-//                message.receiverID = receiverID as? String
-//                message.receiverEmail = receiverEmail as? String
-//                message.senderID = senderID as? String
-//                message.senderEmail = senderEmail as? String
-//                message.timestamp = timestamp as? NSNumber
-
-                
-//                if message.chatPartnerID() == self.user?.id {
                     self.messagesArray.append(message)
                     
                     DispatchQueue.main.async {
                         self.collectionView.reloadData()
                         self.scrollToLastIndex()
                     }
-//                }
                 
             }, withCancel: nil)
         }, withCancel: nil)
@@ -547,46 +464,6 @@ class ChatLogController : UICollectionViewController, UICollectionViewDelegateFl
             collectionView.scrollToItem(at: indexPath as IndexPath, at: .bottom, animated: true)
         }
     }
-    
-//    func setupKeyboardObserver() {
-//        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-//
-//        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-//    }
-//
-//    override func viewDidDisappear(_ animated: Bool) {
-//        super.viewDidDisappear(animated)
-//        NotificationCenter.default.removeObserver(self)
-//    }
-//
-//    @objc func handleKeyboardWillShow(notification: Notification) {
-//        let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
-//        let keyboardDuration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as! Double
-////        print(keyboardFrame?.height)
-//        containerViewBottomAnchor?.constant = -keyboardFrame!.height
-//        UIView.animate(withDuration: keyboardDuration) {
-//            self.view.layoutIfNeeded()
-//        }
-//    }
-//    @objc func handleKeyboardWillHide(notification: Notification) {
-//        let keyboardDuration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as! Double
-//        containerViewBottomAnchor?.constant = 0
-//        UIView.animate(withDuration: keyboardDuration) {
-//            self.view.layoutIfNeeded()
-//        }
-//    }
-    
-
-    
-
-    
-    //TODO:  Configure messageTextField height for longer messages
-    
-    //1. adopt Uitextfielddelegate
-    //2. set messageinputtextfield as delegate
-    //3.use textfielddidbeginediting
-    
-    //TODO: Configure keyboard size and container with message and sendButton to appear above keyboard
     
 }
 

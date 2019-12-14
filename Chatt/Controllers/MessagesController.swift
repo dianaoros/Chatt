@@ -73,7 +73,7 @@ class MessagesController: UITableViewController {
     }
     
     func setupNavBarWithUser(user: UsersModel) {
-//        navigationItem.title = user.name
+
         messagesArray.removeAll()
         messageDictionary.removeAll()
         tableView.reloadData()
@@ -82,7 +82,6 @@ class MessagesController: UITableViewController {
 
         let titleView = UIView()
         titleView.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
-//        titleView.backgroundColor = UIColor.red
 
         let profileImageView = UIImageView()
         profileImageView.contentMode = .scaleAspectFill
@@ -121,9 +120,6 @@ class MessagesController: UITableViewController {
 
         containerView.centerXAnchor.constraint(equalTo: titleView.centerXAnchor).isActive = true
         containerView.centerYAnchor.constraint(equalTo: titleView.centerYAnchor).isActive = true
-        
-//        self.navigationController?.navigationBar.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showChatController)))
-//        self.navigationController?.navigationBar.isUserInteractionEnabled = true
 
     }
     
@@ -160,15 +156,6 @@ class MessagesController: UITableViewController {
                 self.fetchMessagesWithMessageID(messageID: messageID)
                 
             }, withCancel: nil)
-            
-//            partnerIDMessageReference.observe(.childRemoved, with: { (snapshot) in
-//                print(snapshot)
-//                print(self.messageDictionary)
-//                self.messageDictionary.removeValue(forKey: snapshot.key)
-//                self.attemptReloadOfTable()
-//
-//            }, withCancel: nil)
-            
         }, withCancel: nil)
         
         userMessagesReference.observe(.childRemoved, with: { (snapshot) in
@@ -178,8 +165,6 @@ class MessagesController: UITableViewController {
             self.attemptReloadOfTable()
             
         }, withCancel: nil)
-        
-        
 
     }
     
@@ -191,30 +176,11 @@ class MessagesController: UITableViewController {
                 
                 let message = MessagesModel(dictionary: dictionary)
                 
-//                let receiverID = dictionary["receiverID"]!
-//                let receiverEmail = dictionary["receiverEmail"]!
-//                let senderID = dictionary["senderID"]!
-//                let senderEmail = dictionary["senderEmail"]!
-//                let timestamp = dictionary["timestamp"]!
-//                
-//                if let text = dictionary["text"] {
-//                    message.text = text as? String
-//                }
-//                
-//                message.receiverID = receiverID as? String
-//                message.receiverEmail = receiverEmail as? String
-//                message.senderID = senderID as? String
-//                message.senderEmail = senderEmail as? String
-//                message.timestamp = timestamp as? NSNumber
-                
-                
-                //                self.messagesArray.append(message)
                 if let chatPartnerID = message.chatPartnerID() {
                     self.messageDictionary[chatPartnerID] = message
                     
                 }
                 self.attemptReloadOfTable()
-                
             }
             
         }, withCancel: nil)

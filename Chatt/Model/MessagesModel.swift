@@ -28,7 +28,7 @@ class MessagesModel: NSObject {
         } else {
             return senderID
         }
-        // Can also be written as one line :
+        // Can also be written on one line :
 //         return senderID == Auth.auth().currentUser?.uid ? receiverID : senderID
     }
     
