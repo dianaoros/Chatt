@@ -1,6 +1,6 @@
-#CHATT
+#<CHATT>
 
-The Chatt app is an **iMessage** like app built in ##Swift using Xcode. The iOS Deployment Target is 12.2.
+The Chatt app is an **iMessage** like app built in ##<Swift> using Xcode. The iOS Deployment Target is 12.2.
 
 The project can be downloaded or cloned and it requires **Cocoapods** installation in order to build and run the project. It also requires a **Firebase account** in order to sign up and write data. The app can be played on Xcode's Simulator.
 
