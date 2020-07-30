@@ -18,9 +18,20 @@ The code also needs to be update with access control.
 
 Here is how the app looks to the end user:
 
+Login
 ![Login screen](/README_images/Chatt_login.png)
+
+Signup
 ![Signup screen](/README_images/Chatt_signup.png)
+
+My Messages
 ![My messages screen](/README_images/Chatt__my_messages_list.png)
+
+Write a Message
 ![Write a message screen](/README_images/Chatt_write_message.png)
+
+Received Message
 ![Message screen](/README_images/Chatt_message1.png)
+
+List of Users
 ![List of users screen](/README_images/Chatt_list_of_users.png)
